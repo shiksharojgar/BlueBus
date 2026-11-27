@@ -61,7 +61,7 @@ class MainActivity : Activity() {
         val fromInput = EditText(this).apply {
             hint = "कहाँ से? (शहर / बस स्टैंड)"
             textSize = 16f
-            singleLine = true
+            setSingleLine(true)
             setPadding(16, 14, 16, 14)
             setBackgroundColor(Color.WHITE)
         }
@@ -70,7 +70,7 @@ class MainActivity : Activity() {
         val toInput = EditText(this).apply {
             hint = "कहाँ तक? (शहर / बस स्टैंड)"
             textSize = 16f
-            singleLine = true
+            setSingleLine(true)
             setPadding(16, 14, 16, 14)
             setBackgroundColor(Color.WHITE)
         }
