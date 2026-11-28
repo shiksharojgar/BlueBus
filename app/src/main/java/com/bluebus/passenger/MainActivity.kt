@@ -31,22 +31,32 @@ class MainActivity : Activity() {
         }
 
         val brand = TextView(this).apply {
-            text = "🚌 BlueBus"
+        
+        // बाईं ओर तीन लाइन वाला मेनू बटन
+        val menuButton = TextView(this).apply {
+            text = "☰"
             textSize = 30f
-            setTextColor(darkBlue)
-            typeface = Typeface.DEFAULT_BOLD
+            setTextColor(Color.WHITE)
             gravity = Gravity.CENTER
-        }
-        page.addView(brand, matchWidth())
+            setPadding(4, 8, 12, 8)
 
-        val tagline = TextView(this).apply {
-            text = "हर बस की जानकारी, अब एक जगह!"
-            textSize = 16f
-            setTextColor(darkBlue)
-            gravity = Gravity.CENTER
-            setPadding(0, 8, 0, 28)
+            setOnClickListener {
+                android.widget.Toast.makeText(
+                    this@MainActivity,
+                    "मेनू विकल्प जल्द उपलब्ध होंगे।",
+                    android.widget.Toast.LENGTH_SHORT
+                ).show()
+            }
         }
-        page.addView(tagline, matchWidth())
+
+        header.addView(
+            menuButton,
+            LinearLayout.LayoutParams(
+                (48 * resources.displayMetrics.density).toInt(),
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+        )
+
 
         
         // BlueBus Home Banner Photo
