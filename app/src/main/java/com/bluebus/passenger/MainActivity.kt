@@ -119,6 +119,65 @@ page.addView(sponsoredContainer, matchWidth())
         buttonParams.topMargin = 20
         page.addView(searchButton, buttonParams)
 
+        
+        // BlueBus रंगीन मेनू बटन
+
+        fun createMenuTile(
+            title: String,
+            emoji: String,
+            color: Int
+        ): TextView {
+            return TextView(this).apply {
+                text = "$emoji\n$title"
+                textSize = 17f
+                setTextColor(Color.rgb(7, 59, 120))
+                typeface = Typeface.DEFAULT_BOLD
+                gravity = Gravity.CENTER
+                setPadding(8, 16, 8, 16)
+
+                background = android.graphics.drawable.GradientDrawable().apply {
+                    setColor(color)
+                    cornerRadius = 24f
+                }
+            }
+        }
+
+        fun addMenuRow(
+            first: TextView,
+            second: TextView
+        ) {
+            val row = LinearLayout(this).apply {
+                orientation = LinearLayout.HORIZONTAL
+            }
+
+            val firstParams = LinearLayout.LayoutParams(
+                0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f
+            ).apply {
+                setMargins(4, 5, 6, 5)
+            }
+
+            val secondParams = LinearLayout.LayoutParams(
+                0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f
+            ).apply {
+                setMargins(6, 5, 4, 5)
+            }
+
+            row.addView(first, firstParams)
+            row.addView(second, secondParams)
+            page.addView(row, matchWidth())
+        }
+
+        addMenuRow(
+            createMenuTile("बस रूट", "🚌", Color.rgb(217, 240, 255)),
+            createMenuTile("समय सारणी", "🕒", Color.rgb(221, 248, 229))
+        )
+
+        addMenuRow(
+            createMenuTile("बस स्टॉप", "📍", Color.rgb(255, 233, 206)),
+            createMenuTile("किराया", "₹", Color.rgb(255, 242, 184))
+        )
+
+
         val resultsHeading = TextView(this).apply {
             text = "बस खोज परिणाम"
             textSize = 20f
