@@ -78,6 +78,7 @@ class MainActivity : Activity() {
         toParams.topMargin = 14
         page.addView(toInput, toParams)
 
+        
         val searchButton = Button(this).apply {
             text = "बस खोजें"
             textSize = 17f
@@ -90,14 +91,26 @@ class MainActivity : Activity() {
                 when {
                     from.isEmpty() -> fromInput.error = "शुरुआती स्थान भरें"
                     to.isEmpty() -> toInput.error = "गंतव्य स्थान भरें"
-                    else -> Toast.makeText(
-                        this@MainActivity,
-                        "रूट खोज सुविधा अगले चरण में जोड़ी जाएगी।",
-                        Toast.LENGTH_LONG
-                    ).show()
+                    else -> {
+                        val foundRoutes =
+                            BusRouteRepository.findRoutes(from, to)
+
+                        val message = if (foundRoutes.isEmpty()) {
+                            "इस रूट की सत्यापित बस जानकारी अभी उपलब्ध नहीं है।"
+                        } else {
+                            "इस रूट पर ${foundRoutes.size} बस मिलीं।"
+                        }
+
+                        Toast.makeText(
+                            this@MainActivity,
+                            message,
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
                 }
             }
         }
+
         val buttonParams = matchWidth()
         buttonParams.topMargin = 20
         page.addView(searchButton, buttonParams)
