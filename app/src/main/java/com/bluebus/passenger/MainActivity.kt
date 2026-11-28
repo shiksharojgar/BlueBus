@@ -28,6 +28,7 @@ class MainActivity : Activity() {
     private lateinit var sponsoredContainer: LinearLayout
     private lateinit var resultsContainer: LinearLayout
     private lateinit var scrollView: ScrollView
+    private val bottomItems = mutableMapOf<String, TextView>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,16 +67,32 @@ class MainActivity : Activity() {
 
         rootLayout.addView(createBottomBar(), matchWidth())
 
-        val navigationHeight = resources.getIdentifier(
-            "navigation_bar_height", "dimen", "android"
-        )
+        val statusBarHeight = resources.getIdentifier(
+    "status_bar_height", "dimen", "android"
+)
 
-        if (navigationHeight != 0) {
-            rootLayout.setPadding(
-                0, 0, 0,
-                resources.getDimensionPixelSize(navigationHeight)
-            )
-        }
+val navigationHeight = resources.getIdentifier(
+    "navigation_bar_height", "dimen", "android"
+)
+
+val topSpace = if (statusBarHeight != 0) {
+    resources.getDimensionPixelSize(statusBarHeight)
+} else {
+    dp(24)
+}
+
+val bottomSpace = if (navigationHeight != 0) {
+    resources.getDimensionPixelSize(navigationHeight)
+} else {
+    dp(24)
+}
+
+rootLayout.setPadding(
+    0,
+    topSpace,
+    0,
+    bottomSpace
+)
 
         window.statusBarColor = darkBlue
         window.navigationBarColor = darkBlue
@@ -156,61 +173,99 @@ class MainActivity : Activity() {
         return header
     }
 
-    // सभी पेजों पर एक जैसा Bottom Navigation
-    private fun createBottomBar(): LinearLayout {
-        val bar = LinearLayout(this).apply {
-            orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER
-            setBackgroundColor(darkBlue)
-            setPadding(2, 7, 2, 7)
-        }
 
-        addBottomItem(bar, "🏠", "होम") {
-            showPage("Home")
-        }
+// अलग-अलग बटन वाला Bottom Navigation
+private fun createBottomBar(): LinearLayout {
+    bottomItems.clear()
 
-        addBottomItem(bar, "🔍", "खोज") {
-            showPage("Bus Search")
-        }
-
-        addBottomItem(bar, "🔔", "सूचना") {
-            showPage("Notifications")
-        }
-
-        addBottomItem(bar, "👤", "प्रोफाइल") {
-            showPage("Profile")
-        }
-
-        addBottomItem(bar, "☰", "More Option") {
-            showMoreOptions(it)
-        }
-
-        return bar
+    val bar = LinearLayout(this).apply {
+        orientation = LinearLayout.HORIZONTAL
+        gravity = Gravity.CENTER
+        setBackgroundColor(Color.WHITE)
+        setPadding(3, 7, 3, 7)
     }
 
-    private fun addBottomItem(
-        bar: LinearLayout,
-        emoji: String,
-        label: String,
-        action: (View) -> Unit
-    ) {
-        val item = TextView(this).apply {
-            text = "$emoji\n$label"
-            textSize = 11f
-            setTextColor(Color.WHITE)
-            typeface = Typeface.DEFAULT_BOLD
-            gravity = Gravity.CENTER
-            setPadding(2, 8, 2, 8)
-            setOnClickListener { action(it) }
-        }
+    addBottomItem(bar, "Home", "🏠", "होम") {
+        showPage("Home")
+    }
 
-        bar.addView(
-            item,
-            LinearLayout.LayoutParams(
-                0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f
+    addBottomItem(bar, "Bus Search", "🔍", "खोज") {
+        showPage("Bus Search")
+    }
+
+    addBottomItem(bar, "Notifications", "🔔", "सूचना") {
+        showPage("Notifications")
+    }
+
+    addBottomItem(bar, "Profile", "👤", "प्रोफाइल") {
+        showPage("Profile")
+    }
+
+    addBottomItem(bar, "More Option", "☰", "More Option") {
+        setActiveBottom("More Option")
+        showMoreOptions(it)
+    }
+
+    return bar
+}
+
+private fun addBottomItem(
+    bar: LinearLayout,
+    key: String,
+    emoji: String,
+    label: String,
+    action: (View) -> Unit
+) {
+    val item = TextView(this).apply {
+        text = "$emoji\n$label"
+        textSize = if (key == "More Option") 9f else 11f
+        typeface = Typeface.DEFAULT_BOLD
+        gravity = Gravity.CENTER
+        setPadding(2, 9, 2, 9)
+        setOnClickListener { action(it) }
+    }
+
+    bottomItems[key] = item
+
+    bar.addView(
+        item,
+        LinearLayout.LayoutParams(
+            0,
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            1f
+        ).apply {
+            setMargins(dp(3), 0, dp(3), 0)
+        }
+    )
+
+    setBottomItemStyle(item, key == "Home")
+}
+
+private fun setBottomItemStyle(
+    item: TextView,
+    active: Boolean
+) {
+    item.setTextColor(darkBlue)
+
+    item.background =
+        android.graphics.drawable.GradientDrawable().apply {
+            setColor(
+                if (active) {
+                    Color.rgb(255, 220, 65)
+                } else {
+                    Color.rgb(225, 239, 255)
+                }
             )
-        )
+            cornerRadius = dp(12).toFloat()
+        }
+}
+
+private fun setActiveBottom(key: String) {
+    bottomItems.forEach { (itemKey, item) ->
+        setBottomItemStyle(item, itemKey == key)
     }
+}
+
 
     // More Option की सूची - अलग पेज नहीं
     private fun showMoreOptions(anchor: View) {
