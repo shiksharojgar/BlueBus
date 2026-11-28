@@ -518,15 +518,20 @@ private fun createRoutePage() {
 
     // तीसरी फोटो: BlueBus Route Banner
     val routeBanner = ImageView(this).apply {
-        setImageResource(R.drawable.bluebus_route_banner)
-        scaleType = ImageView.ScaleType.FIT_CENTER
-        adjustViewBounds = true
-    }
+    setImageResource(R.drawable.bluebus_route_banner)
+    scaleType = ImageView.ScaleType.FIT_CENTER
+    adjustViewBounds = true
+    setBackgroundColor(Color.WHITE)
+    visibility = View.VISIBLE
+}
 
-    contentContainer.addView(
-        routeBanner,
-        LinearLayout.LayoutParams(-1, -2)
+contentContainer.addView(
+    routeBanner,
+    LinearLayout.LayoutParams(
+        ViewGroup.LayoutParams.MATCH_PARENT,
+        220
     )
+)
 
     addHeading("भोपाल → इंदौर")
 
