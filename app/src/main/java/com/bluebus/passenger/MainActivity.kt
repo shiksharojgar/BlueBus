@@ -177,6 +177,42 @@ page.addView(sponsoredContainer, matchWidth())
             createMenuTile("किराया", "₹", Color.rgb(255, 242, 184))
         )
 
+        
+
+        // बस खोजें और रूट देखें बटन
+
+        val busSearchTile = createMenuTile(
+            "बस खोजें",
+            "🔍",
+            Color.rgb(210, 230, 255)
+        )
+
+        busSearchTile.setOnClickListener {
+            fromInput.requestFocus()
+            val imm = getSystemService(
+                android.content.Context.INPUT_METHOD_SERVICE
+            ) as android.view.inputmethod.InputMethodManager
+            imm.showSoftInput(
+                fromInput,
+                android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT
+            )
+        }
+
+        val routeViewTile = createMenuTile(
+            "रूट देखें",
+            "🛣️",
+            Color.rgb(225, 235, 255)
+        )
+
+        routeViewTile.setOnClickListener {
+            android.widget.Toast.makeText(
+                this,
+                "रूट की जानकारी जल्द उपलब्ध होगी।",
+                android.widget.Toast.LENGTH_SHORT
+            ).show()
+        }
+
+        addMenuRow(busSearchTile, routeViewTile)
 
         val resultsHeading = TextView(this).apply {
             text = "बस खोज परिणाम"
