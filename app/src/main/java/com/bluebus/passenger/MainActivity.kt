@@ -10,13 +10,14 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.ScrollView
 import android.widget.TextView
-import android.widget.Toast
 
 class MainActivity : Activity() {
 
     private val blue = Color.rgb(18, 100, 197)
     private val darkBlue = Color.rgb(7, 59, 120)
+    private lateinit var resultsContainer: LinearLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,10 +26,6 @@ class MainActivity : Activity() {
             orientation = LinearLayout.VERTICAL
             setPadding(24, 36, 24, 24)
             setBackgroundColor(Color.rgb(245, 249, 255))
-            layoutParams = ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
-            )
         }
 
         val brand = TextView(this).apply {
@@ -78,34 +75,27 @@ class MainActivity : Activity() {
         toParams.topMargin = 14
         page.addView(toInput, toParams)
 
-        
         val searchButton = Button(this).apply {
             text = "बस खोजें"
             textSize = 17f
             setTextColor(Color.WHITE)
             setBackgroundColor(blue)
+
             setOnClickListener {
                 val from = fromInput.text.toString().trim()
                 val to = toInput.text.toString().trim()
 
                 when {
-                    from.isEmpty() -> fromInput.error = "शुरुआती स्थान भरें"
-                    to.isEmpty() -> toInput.error = "गंतव्य स्थान भरें"
+                    from.isEmpty() -> {
+                        fromInput.error = "शुरुआती स्थान भरें"
+                    }
+
+                    to.isEmpty() -> {
+                        toInput.error = "गंतव्य स्थान भरें"
+                    }
+
                     else -> {
-                        val foundRoutes =
-                            BusRouteRepository.findRoutes(from, to)
-
-                        val message = if (foundRoutes.isEmpty()) {
-                            "इस रूट की सत्यापित बस जानकारी अभी उपलब्ध नहीं है।"
-                        } else {
-                            "इस रूट पर ${foundRoutes.size} बस मिलीं।"
-                        }
-
-                        Toast.makeText(
-                            this@MainActivity,
-                            message,
-                            Toast.LENGTH_LONG
-                        ).show()
+                        showSearchResults(from, to)
                     }
                 }
             }
@@ -114,6 +104,20 @@ class MainActivity : Activity() {
         val buttonParams = matchWidth()
         buttonParams.topMargin = 20
         page.addView(searchButton, buttonParams)
+
+        val resultsHeading = TextView(this).apply {
+            text = "बस खोज परिणाम"
+            textSize = 20f
+            setTextColor(darkBlue)
+            typeface = Typeface.DEFAULT_BOLD
+            setPadding(0, 28, 0, 12)
+        }
+        page.addView(resultsHeading, matchWidth())
+
+        resultsContainer = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+        }
+        page.addView(resultsContainer, matchWidth())
 
         val note = TextView(this).apply {
             text = "शुरुआत मध्य प्रदेश से • सत्यापित जानकारी पर विशेष ध्यान"
@@ -124,7 +128,91 @@ class MainActivity : Activity() {
         }
         page.addView(note, matchWidth())
 
-        setContentView(page)
+        val scrollView = ScrollView(this).apply {
+            addView(
+                page,
+                ScrollView.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                )
+            )
+        }
+
+        setContentView(scrollView)
+    }
+
+    private fun showSearchResults(from: String, to: String) {
+        resultsContainer.removeAllViews()
+
+        val foundRoutes = BusRouteRepository.findRoutes(from, to)
+
+        if (foundRoutes.isEmpty()) {
+            val message = TextView(this).apply {
+                text = "इस रूट की सत्यापित बस जानकारी अभी उपलब्ध नहीं है।\n\nहम जल्द ही और बसों की जानकारी जोड़ेंगे।"
+                textSize = 16f
+                setTextColor(Color.DKGRAY)
+                setPadding(16, 20, 16, 20)
+                setBackgroundColor(Color.WHITE)
+            }
+            resultsContainer.addView(message, matchWidth())
+            return
+        }
+
+        val count = TextView(this).apply {
+            text = "इस रूट पर ${foundRoutes.size} बस मिलीं।"
+            textSize = 16f
+            setTextColor(darkBlue)
+            typeface = Typeface.DEFAULT_BOLD
+            setPadding(0, 8, 0, 12)
+        }
+        resultsContainer.addView(count, matchWidth())
+
+        foundRoutes.forEach { route ->
+            addRouteCard(route)
+        }
+    }
+
+    private fun addRouteCard(route: BusRoute) {
+        val card = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(18, 16, 18, 16)
+            setBackgroundColor(Color.WHITE)
+        }
+
+        fun addLine(value: String, size: Float, bold: Boolean = false) {
+            val text = TextView(this).apply {
+                text = value
+                textSize = size
+                setTextColor(Color.DKGRAY)
+                if (bold) typeface = Typeface.DEFAULT_BOLD
+                setPadding(0, 4, 0, 4)
+            }
+            card.addView(text, matchWidth())
+        }
+
+        addLine("🚌 ${route.busName}", 19f, true)
+        addLine("ऑपरेटर: ${route.operatorName}", 15f)
+        addLine("रूट: ${route.startPoint} → ${route.endPoint}", 15f)
+        addLine("स्टॉप: ${route.stops.joinToString(" → ")}", 14f)
+        addLine("प्रस्थान: ${route.departureTime ?: "उपलब्ध नहीं"}", 14f)
+        addLine("आगमन: ${route.arrivalTime ?: "उपलब्ध नहीं"}", 14f)
+        addLine("किराया: ${route.fare ?: "उपलब्ध नहीं"}", 14f)
+
+        addLine(
+            if (route.isVerified) "✓ सत्यापित बस" else "⚠ सत्यापन बाकी",
+            14f,
+            true
+        )
+
+        addLine("जानकारी का स्रोत: ${route.source}", 13f)
+        addLine(
+            "अंतिम जाँच: ${route.lastVerifiedDate ?: "उपलब्ध नहीं"}",
+            13f
+        )
+
+        val params = matchWidth()
+        params.bottomMargin = 14
+        resultsContainer.addView(card, params)
     }
 
     private fun matchWidth() = LinearLayout.LayoutParams(
