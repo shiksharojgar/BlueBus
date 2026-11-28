@@ -32,14 +32,29 @@ class MainActivity : Activity() {
 
         val brand = TextView(this).apply {
         
-        // बाईं ओर तीन लाइन वाला मेनू बटन
+        // BlueBus Header with Left Menu
+
+        val header = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            setPadding(12, 14, 12, 14)
+            background = android.graphics.drawable.GradientDrawable(
+                android.graphics.drawable.GradientDrawable.Orientation.LEFT_RIGHT,
+                intArrayOf(
+                    Color.rgb(7, 59, 120),
+                    Color.rgb(18, 100, 197)
+                )
+            ).apply {
+                cornerRadius = 24f
+            }
+        }
+
         val menuButton = TextView(this).apply {
             text = "☰"
             textSize = 30f
             setTextColor(Color.WHITE)
             gravity = Gravity.CENTER
             setPadding(4, 8, 12, 8)
-
             setOnClickListener {
                 android.widget.Toast.makeText(
                     this@MainActivity,
@@ -56,6 +71,52 @@ class MainActivity : Activity() {
                 ViewGroup.LayoutParams.WRAP_CONTENT
             )
         )
+
+        val logo = ImageView(this).apply {
+            setImageResource(R.drawable.ic_bluebus_full)
+            scaleType = ImageView.ScaleType.FIT_CENTER
+        }
+
+        header.addView(
+            logo,
+            LinearLayout.LayoutParams(
+                (58 * resources.displayMetrics.density).toInt(),
+                (58 * resources.displayMetrics.density).toInt()
+            )
+        )
+
+        val headerText = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(10, 0, 0, 0)
+        }
+
+        val headerTitle = TextView(this).apply {
+            text = "BlueBus"
+            textSize = 27f
+            setTextColor(Color.WHITE)
+            typeface = Typeface.DEFAULT_BOLD
+        }
+
+        val headerTagline = TextView(this).apply {
+            text = "हर बस की जानकारी, अब एक जगह!"
+            textSize = 12f
+            setTextColor(Color.WHITE)
+        }
+
+        headerText.addView(headerTitle, matchWidth())
+        headerText.addView(headerTagline, matchWidth())
+
+        header.addView(
+            headerText,
+            LinearLayout.LayoutParams(
+                0,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                1f
+            )
+        )
+
+        page.addView(header, matchWidth())
+
 
 
         
