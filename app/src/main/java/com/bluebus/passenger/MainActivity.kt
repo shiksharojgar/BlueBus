@@ -237,6 +237,7 @@ page.addView(sponsoredContainer, matchWidth())
         }
         page.addView(note, matchWidth())
 
+        
         val scrollView = ScrollView(this).apply {
             addView(
                 page,
@@ -247,7 +248,103 @@ page.addView(sponsoredContainer, matchWidth())
             )
         }
 
-        setContentView(scrollView)
+        // मुख्य स्क्रीन: ऊपर स्क्रॉल, नीचे स्थायी मेनू
+        val rootLayout = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setBackgroundColor(Color.WHITE)
+        }
+
+        rootLayout.addView(
+            scrollView,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                0,
+                1f
+            )
+        )
+
+        // नीचे का नीला Bottom Navigation Bar
+        val bottomBar = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER
+            setBackgroundColor(darkBlue)
+            setPadding(2, 8, 2, 8)
+        }
+
+        fun addBottomItem(
+            emoji: String,
+            label: String,
+            action: () -> Unit
+        ) {
+            val item = TextView(this).apply {
+                text = "$emoji\n$label"
+                textSize = 12f
+                setTextColor(Color.WHITE)
+                typeface = Typeface.DEFAULT_BOLD
+                gravity = Gravity.CENTER
+                setPadding(2, 8, 2, 8)
+                setOnClickListener { action() }
+            }
+
+            bottomBar.addView(
+                item,
+                LinearLayout.LayoutParams(
+                    0,
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    1f
+                )
+            )
+        }
+
+        addBottomItem("🏠", "होम") {
+            scrollView.smoothScrollTo(0, 0)
+        }
+
+        addBottomItem("🔍", "खोज") {
+            fromInput.requestFocus()
+            val imm = getSystemService(
+                android.content.Context.INPUT_METHOD_SERVICE
+            ) as android.view.inputmethod.InputMethodManager
+            imm.showSoftInput(
+                fromInput,
+                android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT
+            )
+        }
+
+        addBottomItem("🔔", "सूचना") {
+            android.widget.Toast.makeText(
+                this, "सूचना सुविधा जल्द उपलब्ध होगी।",
+                android.widget.Toast.LENGTH_SHORT
+            ).show()
+        }
+
+        addBottomItem("👤", "प्रोफाइल") {
+            android.widget.Toast.makeText(
+                this, "प्रोफाइल सुविधा जल्द उपलब्ध होगी।",
+                android.widget.Toast.LENGTH_SHORT
+            ).show()
+        }
+
+        addBottomItem("☰", "अधिक") {
+            android.widget.Toast.makeText(
+                this, "अधिक विकल्प जल्द उपलब्ध होंगे।",
+                android.widget.Toast.LENGTH_SHORT
+            ).show()
+        }
+
+        rootLayout.addView(
+            bottomBar,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+        )
+
+        window.statusBarColor = darkBlue
+        window.navigationBarColor = darkBlue
+
+        setContentView(rootLayout)
+
         SponsoredAdRepository.loadApprovedAds(
     placement = "home",
     onSuccess = { ads ->
