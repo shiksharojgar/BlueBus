@@ -3,367 +3,57 @@ package com.bluebus.passenger
 
 import android.app.Activity
 import android.os.Bundle
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
 import android.view.Gravity
+import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
-import android.widget.LinearLayout
 import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.PopupMenu
 import android.widget.ScrollView
 import android.widget.TextView
+import android.widget.Toast
 
 class MainActivity : Activity() {
 
     private val blue = Color.rgb(18, 100, 197)
     private val darkBlue = Color.rgb(7, 59, 120)
-    private lateinit var resultsContainer: LinearLayout
+    private val lightBg = Color.rgb(245, 249, 255)
+
+    private lateinit var contentContainer: LinearLayout
     private lateinit var sponsoredContainer: LinearLayout
+    private lateinit var resultsContainer: LinearLayout
+    private lateinit var scrollView: ScrollView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val page = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(24, 36, 24, 24)
-            setBackgroundColor(Color.rgb(245, 249, 255))
-        }
-
-        
-        // BlueBus Header with Left Menu
-
-        val header = LinearLayout(this).apply {
-            orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER_VERTICAL
-            setPadding(12, 14, 12, 14)
-            background = android.graphics.drawable.GradientDrawable(
-                android.graphics.drawable.GradientDrawable.Orientation.LEFT_RIGHT,
-                intArrayOf(
-                    Color.rgb(7, 59, 120),
-                    Color.rgb(18, 100, 197)
-                )
-            ).apply {
-                cornerRadius = 24f
-            }
-        }
-
-        val menuButton = TextView(this).apply {
-            text = "☰"
-            textSize = 30f
-            setTextColor(Color.WHITE)
-            gravity = Gravity.CENTER
-            setPadding(4, 8, 12, 8)
-            setOnClickListener {
-                android.widget.Toast.makeText(
-                    this@MainActivity,
-                    "मेनू विकल्प जल्द उपलब्ध होंगे।",
-                    android.widget.Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
-
-        header.addView(
-            menuButton,
-            LinearLayout.LayoutParams(
-                (48 * resources.displayMetrics.density).toInt(),
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            )
-        )
-
-        val logo = ImageView(this).apply {
-            setImageResource(R.drawable.ic_bluebus_full)
-            scaleType = ImageView.ScaleType.FIT_CENTER
-        }
-
-        header.addView(
-            logo,
-            LinearLayout.LayoutParams(
-                (58 * resources.displayMetrics.density).toInt(),
-                (58 * resources.displayMetrics.density).toInt()
-            )
-        )
-
-        val headerText = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(10, 0, 0, 0)
-        }
-
-        val headerTitle = TextView(this).apply {
-            text = "BlueBus"
-            textSize = 27f
-            setTextColor(Color.WHITE)
-            typeface = Typeface.DEFAULT_BOLD
-        }
-
-        val headerTagline = TextView(this).apply {
-            text = "हर बस की जानकारी, अब एक जगह!"
-            textSize = 12f
-            setTextColor(Color.WHITE)
-        }
-
-        headerText.addView(headerTitle, matchWidth())
-        headerText.addView(headerTagline, matchWidth())
-
-        header.addView(
-            headerText,
-            LinearLayout.LayoutParams(
-                0,
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                1f
-            )
-        )
-
-        page.addView(header, matchWidth())
-
-
-
-        
-        // BlueBus Home Banner Photo
-
-        val bannerCard = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            gravity = Gravity.CENTER
-            setPadding(12, 14, 12, 14)
-            setBackgroundColor(darkBlue)
-        }
-
-        val bannerImage = ImageView(this).apply {
-            setImageResource(R.drawable.ic_bluebus_full)
-            scaleType = ImageView.ScaleType.FIT_CENTER
-            adjustViewBounds = true
-        }
-
-        bannerCard.addView(
-            bannerImage,
-            LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                (190 * resources.displayMetrics.density).toInt()
-            )
-        )
-
-        val bannerText = TextView(this).apply {
-            text = "सफल अब और भी आसान !"
-            textSize = 25f
-            setTextColor(Color.WHITE)
-            typeface = Typeface.DEFAULT_BOLD
-            gravity = Gravity.CENTER
-            setPadding(4, 14, 4, 8)
-        }
-
-        bannerCard.addView(bannerText, matchWidth())
-
-        val bannerParams = matchWidth()
-        bannerParams.bottomMargin = 18
-        page.addView(bannerCard, bannerParams)
-
-        val sponsoredHeading = TextView(this).apply {
-    text = "⭐ प्रायोजित बसें"
-    textSize = 20f
-    setTextColor(darkBlue)
-    typeface = Typeface.DEFAULT_BOLD
-    setPadding(0, 12, 0, 12)
-}
-page.addView(sponsoredHeading, matchWidth())
-
-sponsoredContainer = LinearLayout(this).apply {
-    orientation = LinearLayout.VERTICAL
-}
-page.addView(sponsoredContainer, matchWidth())
-
-        val heading = TextView(this).apply {
-            text = "अपनी बस खोजें"
-            textSize = 22f
-            setTextColor(Color.BLACK)
-            typeface = Typeface.DEFAULT_BOLD
-            setPadding(0, 8, 0, 16)
-        }
-        page.addView(heading, matchWidth())
-
-        val fromInput = EditText(this).apply {
-            hint = "कहाँ से? (शहर / बस स्टैंड)"
-            textSize = 16f
-            setSingleLine(true)
-            setPadding(16, 14, 16, 14)
-            setBackgroundColor(Color.WHITE)
-        }
-        page.addView(fromInput, inputParams())
-
-        val toInput = EditText(this).apply {
-            hint = "कहाँ तक? (शहर / बस स्टैंड)"
-            textSize = 16f
-            setSingleLine(true)
-            setPadding(16, 14, 16, 14)
-            setBackgroundColor(Color.WHITE)
-        }
-        val toParams = inputParams()
-        toParams.topMargin = 14
-        page.addView(toInput, toParams)
-
-        val searchButton = Button(this).apply {
-            text = "बस खोजें"
-            textSize = 17f
-            setTextColor(Color.WHITE)
-            setBackgroundColor(blue)
-
-            setOnClickListener {
-                val from = fromInput.text.toString().trim()
-                val to = toInput.text.toString().trim()
-
-                when {
-                    from.isEmpty() -> {
-                        fromInput.error = "शुरुआती स्थान भरें"
-                    }
-
-                    to.isEmpty() -> {
-                        toInput.error = "गंतव्य स्थान भरें"
-                    }
-
-                    else -> {
-                        showSearchResults(from, to)
-                    }
-                }
-            }
-        }
-
-        val buttonParams = matchWidth()
-        buttonParams.topMargin = 20
-        page.addView(searchButton, buttonParams)
-
-        
-        // BlueBus रंगीन मेनू बटन
-
-        fun createMenuTile(
-            title: String,
-            emoji: String,
-            color: Int
-        ): TextView {
-            return TextView(this).apply {
-                text = "$emoji\n$title"
-                textSize = 17f
-                setTextColor(Color.rgb(7, 59, 120))
-                typeface = Typeface.DEFAULT_BOLD
-                gravity = Gravity.CENTER
-                setPadding(8, 16, 8, 16)
-
-                background = android.graphics.drawable.GradientDrawable().apply {
-                    setColor(color)
-                    cornerRadius = 24f
-                }
-            }
-        }
-
-        fun addMenuRow(
-            first: TextView,
-            second: TextView
-        ) {
-            val row = LinearLayout(this).apply {
-                orientation = LinearLayout.HORIZONTAL
-            }
-
-            val firstParams = LinearLayout.LayoutParams(
-                0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f
-            ).apply {
-                setMargins(4, 5, 6, 5)
-            }
-
-            val secondParams = LinearLayout.LayoutParams(
-                0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f
-            ).apply {
-                setMargins(6, 5, 4, 5)
-            }
-
-            row.addView(first, firstParams)
-            row.addView(second, secondParams)
-            page.addView(row, matchWidth())
-        }
-
-        addMenuRow(
-            createMenuTile("बस रूट", "🚌", Color.rgb(217, 240, 255)),
-            createMenuTile("समय सारणी", "🕒", Color.rgb(221, 248, 229))
-        )
-
-        addMenuRow(
-            createMenuTile("बस स्टॉप", "📍", Color.rgb(255, 233, 206)),
-            createMenuTile("किराया", "₹", Color.rgb(255, 242, 184))
-        )
-
-        
-
-        // बस खोजें और रूट देखें बटन
-
-        val busSearchTile = createMenuTile(
-            "बस खोजें",
-            "🔍",
-            Color.rgb(210, 230, 255)
-        )
-
-        busSearchTile.setOnClickListener {
-            fromInput.requestFocus()
-            val imm = getSystemService(
-                android.content.Context.INPUT_METHOD_SERVICE
-            ) as android.view.inputmethod.InputMethodManager
-            imm.showSoftInput(
-                fromInput,
-                android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT
-            )
-        }
-
-        val routeViewTile = createMenuTile(
-            "रूट देखें",
-            "🛣️",
-            Color.rgb(225, 235, 255)
-        )
-
-        routeViewTile.setOnClickListener {
-            android.widget.Toast.makeText(
-                this,
-                "रूट की जानकारी जल्द उपलब्ध होगी।",
-                android.widget.Toast.LENGTH_SHORT
-            ).show()
-        }
-
-        addMenuRow(busSearchTile, routeViewTile)
-
-        val resultsHeading = TextView(this).apply {
-            text = "बस खोज परिणाम"
-            textSize = 20f
-            setTextColor(darkBlue)
-            typeface = Typeface.DEFAULT_BOLD
-            setPadding(0, 28, 0, 12)
-        }
-        page.addView(resultsHeading, matchWidth())
-
-        resultsContainer = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-        }
-        page.addView(resultsContainer, matchWidth())
-
-        val note = TextView(this).apply {
-            text = "शुरुआत मध्य प्रदेश से • सत्यापित जानकारी पर विशेष ध्यान"
-            textSize = 13f
-            setTextColor(Color.DKGRAY)
-            gravity = Gravity.CENTER
-            setPadding(0, 28, 0, 0)
-        }
-        page.addView(note, matchWidth())
-
-        
-        val scrollView = ScrollView(this).apply {
-            addView(
-                page,
-                ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT
-                )
-            )
-        }
-
-        // मुख्य स्क्रीन: ऊपर स्क्रॉल, नीचे स्थायी मेनू
         val rootLayout = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setBackgroundColor(Color.WHITE)
         }
+
+        val header = createHeader()
+        rootLayout.addView(header, matchWidth())
+
+        scrollView = ScrollView(this)
+        contentContainer = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(20, 20, 20, 24)
+            setBackgroundColor(lightBg)
+        }
+
+        scrollView.addView(
+            contentContainer,
+            ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+        )
 
         rootLayout.addView(
             scrollView,
@@ -374,125 +64,343 @@ page.addView(sponsoredContainer, matchWidth())
             )
         )
 
-        // नीचे का नीला Bottom Navigation Bar
-        val bottomBar = LinearLayout(this).apply {
-            orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER
-            setBackgroundColor(darkBlue)
-            setPadding(2, 8, 2, 8)
-        }
+        rootLayout.addView(createBottomBar(), matchWidth())
 
-        fun addBottomItem(
-            emoji: String,
-            label: String,
-            action: () -> Unit
-        ) {
-            val item = TextView(this).apply {
-                text = "$emoji\n$label"
-                textSize = 12f
-                setTextColor(Color.WHITE)
-                typeface = Typeface.DEFAULT_BOLD
-                gravity = Gravity.CENTER
-                setPadding(2, 8, 2, 8)
-                setOnClickListener { action() }
-            }
-
-            bottomBar.addView(
-                item,
-                LinearLayout.LayoutParams(
-                    0,
-                    ViewGroup.LayoutParams.WRAP_CONTENT,
-                    1f
-                )
-            )
-        }
-
-        addBottomItem("🏠", "होम") {
-            scrollView.smoothScrollTo(0, 0)
-        }
-
-        addBottomItem("🔍", "खोज") {
-            fromInput.requestFocus()
-            val imm = getSystemService(
-                android.content.Context.INPUT_METHOD_SERVICE
-            ) as android.view.inputmethod.InputMethodManager
-            imm.showSoftInput(
-                fromInput,
-                android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT
-            )
-        }
-
-        addBottomItem("🔔", "सूचना") {
-            android.widget.Toast.makeText(
-                this, "सूचना सुविधा जल्द उपलब्ध होगी।",
-                android.widget.Toast.LENGTH_SHORT
-            ).show()
-        }
-
-        addBottomItem("👤", "प्रोफाइल") {
-            android.widget.Toast.makeText(
-                this, "प्रोफाइल सुविधा जल्द उपलब्ध होगी।",
-                android.widget.Toast.LENGTH_SHORT
-            ).show()
-        }
-
-        addBottomItem("☰", "अधिक") {
-            android.widget.Toast.makeText(
-                this, "अधिक विकल्प जल्द उपलब्ध होंगे।",
-                android.widget.Toast.LENGTH_SHORT
-            ).show()
-        }
-
-        rootLayout.addView(
-            bottomBar,
-            LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            )
+        val navigationHeight = resources.getIdentifier(
+            "navigation_bar_height", "dimen", "android"
         )
+
+        if (navigationHeight != 0) {
+            rootLayout.setPadding(
+                0, 0, 0,
+                resources.getDimensionPixelSize(navigationHeight)
+            )
+        }
 
         window.statusBarColor = darkBlue
-        // मोबाइल के सिस्टम नेविगेशन के लिए जगह सुरक्षित रखें
-rootLayout.setPadding(
-    0,
-    0,
-    0,
-    resources.getDimensionPixelSize(
-        resources.getIdentifier(
-            "navigation_bar_height",
-            "dimen",
-            "android"
-        )
-    )
-)
         window.navigationBarColor = darkBlue
 
         setContentView(rootLayout)
 
-        SponsoredAdRepository.loadApprovedAds(
-    placement = "home",
-    onSuccess = { ads ->
-        runOnUiThread {
-            sponsoredContainer.removeAllViews()
+        showPage("Home")
+    }
 
-            ads.forEach { ad ->
-                val card = SponsoredAdUi.createCard(this, ad)
-
-                val params = matchWidth()
-                params.bottomMargin = 14
-
-                sponsoredContainer.addView(card, params)
+    // सभी पेजों पर एक जैसा Header
+    private fun createHeader(): LinearLayout {
+        val header = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            setPadding(10, 12, 10, 12)
+            background = android.graphics.drawable.GradientDrawable(
+                android.graphics.drawable.GradientDrawable.Orientation.LEFT_RIGHT,
+                intArrayOf(darkBlue, blue)
+            ).apply {
+                cornerRadius = 20f
             }
         }
-    },
-    onError = { exception ->
-        android.util.Log.e(
-            "BlueBus",
-            "Sponsored ads load failed",
-            exception
+
+        val menuButton = TextView(this).apply {
+            text = "☰"
+            textSize = 29f
+            setTextColor(Color.WHITE)
+            gravity = Gravity.CENTER
+            setPadding(8, 6, 12, 6)
+            setOnClickListener { showMoreOptions(it) }
+        }
+
+        header.addView(
+            menuButton,
+            LinearLayout.LayoutParams(
+                dp(46), ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+        )
+
+        val logo = ImageView(this).apply {
+            setImageResource(R.drawable.ic_bluebus_full)
+            scaleType = ImageView.ScaleType.FIT_CENTER
+        }
+
+        header.addView(
+            logo,
+            LinearLayout.LayoutParams(dp(54), dp(54))
+        )
+
+        val brand = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(10, 0, 0, 0)
+        }
+
+        val title = TextView(this).apply {
+            text = "BlueBus"
+            textSize = 25f
+            setTextColor(Color.WHITE)
+            typeface = Typeface.DEFAULT_BOLD
+        }
+
+        val tagline = TextView(this).apply {
+            text = "हर बस की जानकारी, अब एक जगह!"
+            textSize = 11f
+            setTextColor(Color.WHITE)
+        }
+
+        brand.addView(title, matchWidth())
+        brand.addView(tagline, matchWidth())
+
+        header.addView(
+            brand,
+            LinearLayout.LayoutParams(
+                0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f
+            )
+        )
+
+        return header
+    }
+
+    // सभी पेजों पर एक जैसा Bottom Navigation
+    private fun createBottomBar(): LinearLayout {
+        val bar = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER
+            setBackgroundColor(darkBlue)
+            setPadding(2, 7, 2, 7)
+        }
+
+        addBottomItem(bar, "🏠", "होम") {
+            showPage("Home")
+        }
+
+        addBottomItem(bar, "🔍", "खोज") {
+            showPage("Bus Search")
+        }
+
+        addBottomItem(bar, "🔔", "सूचना") {
+            showPage("Notifications")
+        }
+
+        addBottomItem(bar, "👤", "प्रोफाइल") {
+            showPage("Profile")
+        }
+
+        addBottomItem(bar, "☰", "More Option") {
+            showMoreOptions(it)
+        }
+
+        return bar
+    }
+
+    private fun addBottomItem(
+        bar: LinearLayout,
+        emoji: String,
+        label: String,
+        action: (View) -> Unit
+    ) {
+        val item = TextView(this).apply {
+            text = "$emoji\n$label"
+            textSize = 11f
+            setTextColor(Color.WHITE)
+            typeface = Typeface.DEFAULT_BOLD
+            gravity = Gravity.CENTER
+            setPadding(2, 8, 2, 8)
+            setOnClickListener { action(it) }
+        }
+
+        bar.addView(
+            item,
+            LinearLayout.LayoutParams(
+                0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f
+            )
         )
     }
-)
+
+    // More Option की सूची - अलग पेज नहीं
+    private fun showMoreOptions(anchor: View) {
+        val popup = PopupMenu(this, anchor)
+
+        val options = listOf(
+            "About BlueBus",
+            "Contact Us",
+            "Help & Support",
+            "Privacy Policy",
+            "Terms & Conditions",
+            "Share App",
+            "Rate App"
+        )
+
+        options.forEach { popup.menu.add(it) }
+
+        popup.setOnMenuItemClickListener { item ->
+            when (item.title.toString()) {
+                "Share App" -> {
+                    val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                        type = "text/plain"
+                        putExtra(
+                            Intent.EXTRA_TEXT,
+                            "BlueBus - हर बस की जानकारी, अब एक जगह!"
+                        )
+                    }
+                    startActivity(
+                        Intent.createChooser(shareIntent, "ऐप शेयर करें")
+                    )
+                }
+
+                "Rate App" -> {
+                    showInfoPage(
+                        "Rate App",
+                        "BlueBus को रेट करने की सुविधा जल्द उपलब्ध होगी।"
+                    )
+                }
+
+                "About BlueBus" -> showInfoPage(
+                    "About BlueBus",
+                    "BlueBus का उद्देश्य बसों की जानकारी एक जगह उपलब्ध कराना है।"
+                )
+
+                "Contact Us" -> showInfoPage(
+                    "Contact Us",
+                    "संपर्क जानकारी जल्द उपलब्ध होगी।"
+                )
+
+                "Help & Support" -> showInfoPage(
+                    "Help & Support",
+                    "यात्रा और बस खोज से जुड़ी सहायता जल्द उपलब्ध होगी।"
+                )
+
+                "Privacy Policy" -> showInfoPage(
+                    "Privacy Policy",
+                    "BlueBus की गोपनीयता नीति जल्द उपलब्ध होगी।"
+                )
+
+                "Terms & Conditions" -> showInfoPage(
+                    "Terms & Conditions",
+                    "BlueBus के नियम और शर्तें जल्द उपलब्ध होंगी।"
+                )
+            }
+            true
+        }
+
+        popup.show()
+    }
+
+    // पेज बदलने का मुख्य तरीका
+    private fun showPage(pageName: String) {
+        contentContainer.removeAllViews()
+        scrollView.scrollTo(0, 0)
+
+        when (pageName) {
+            "Home" -> createHomePage()
+            "Bus Search" -> createSearchPage()
+            else -> showInfoPage(
+                pageName,
+                getPageDescription(pageName)
+            )
+        }
+    }
+
+    // Home Page
+    private fun createHomePage() {
+
+        val banner = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            gravity = Gravity.CENTER
+            setPadding(10, 12, 10, 12)
+            setBackgroundColor(darkBlue)
+        }
+
+        val bannerImage = ImageView(this).apply {
+            setImageResource(R.drawable.ic_bluebus_full)
+            scaleType = ImageView.ScaleType.FIT_CENTER
+            adjustViewBounds = true
+        }
+
+        banner.addView(
+            bannerImage,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                dp(180)
+            )
+        )
+
+        val bannerText = TextView(this).apply {
+            text = "सफल अब और भी आसान !"
+            textSize = 24f
+            setTextColor(Color.WHITE)
+            typeface = Typeface.DEFAULT_BOLD
+            gravity = Gravity.CENTER
+            setPadding(4, 12, 4, 8)
+        }
+
+        banner.addView(bannerText, matchWidth())
+        contentContainer.addView(banner, matchWidth())
+
+        addHeading("⭐ प्रायोजित बसें")
+
+        sponsoredContainer = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+        }
+        contentContainer.addView(sponsoredContainer, matchWidth())
+
+        loadSponsoredAds()
+
+        addHeading("अपनी बस खोजें")
+
+        val searchButton = createButton("🔍 बस खोजें") {
+            showPage("Bus Search")
+        }
+        contentContainer.addView(searchButton, matchWidth())
+
+        addHeading("बस सेवाएँ")
+
+        addTileRow(
+            "🚌\nबस रूट", "🕒\nसमय सारणी",
+            "Bus Route", "Timetable"
+        )
+
+        addTileRow(
+            "📍\nबस स्टॉप", "₹\nकिराया",
+            "Bus Stop", "Fare"
+        )
+
+        addTileRow(
+            "🔍\nबस खोजें", "🛣️\nरूट देखें",
+            "Bus Search", "View Route"
+        )
+    }
+
+    // Bus Search Page
+    private fun createSearchPage() {
+        addHeading("🔍 अपनी बस खोजें")
+
+        val fromInput = createInput("कहाँ से? (शहर / बस स्टैंड)")
+        val toInput = createInput("कहाँ तक? (शहर / बस स्टैंड)")
+
+        contentContainer.addView(fromInput, matchWidth())
+
+        val toParams = matchWidth()
+        toParams.topMargin = dp(12)
+        contentContainer.addView(toInput, toParams)
+
+        contentContainer.addView(
+            createButton("बस खोजें") {
+                val from = fromInput.text.toString().trim()
+                val to = toInput.text.toString().trim()
+
+                if (from.isEmpty()) {
+                    fromInput.error = "शुरुआती स्थान भरें"
+                } else if (to.isEmpty()) {
+                    toInput.error = "गंतव्य स्थान भरें"
+                } else {
+                    showSearchResults(from, to)
+                }
+            },
+            matchWidth()
+        )
+
+        addHeading("बस खोज परिणाम")
+
+        resultsContainer = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+        }
+        contentContainer.addView(resultsContainer, matchWidth())
     }
 
     private fun showSearchResults(from: String, to: String) {
@@ -519,6 +427,7 @@ rootLayout.setPadding(
             typeface = Typeface.DEFAULT_BOLD
             setPadding(0, 8, 0, 12)
         }
+
         resultsContainer.addView(count, matchWidth())
 
         foundRoutes.forEach { route ->
@@ -554,8 +463,7 @@ rootLayout.setPadding(
 
         addLine(
             if (route.isVerified) "✓ सत्यापित बस" else "⚠ सत्यापन बाकी",
-            14f,
-            true
+            14f, true
         )
 
         addLine("जानकारी का स्रोत: ${route.source}", 13f)
@@ -565,8 +473,170 @@ rootLayout.setPadding(
         )
 
         val params = matchWidth()
-        params.bottomMargin = 14
+        params.bottomMargin = dp(12)
         resultsContainer.addView(card, params)
+    }
+
+    // अन्य पेजों का सामान्य ढाँचा
+    private fun showInfoPage(title: String, description: String) {
+        contentContainer.removeAllViews()
+        scrollView.scrollTo(0, 0)
+
+        addHeading(title)
+
+        val message = TextView(this).apply {
+            text = description
+            textSize = 17f
+            setTextColor(Color.DKGRAY)
+            setPadding(18, 22, 18, 22)
+            setBackgroundColor(Color.WHITE)
+        }
+
+        contentContainer.addView(message, matchWidth())
+
+        val homeButton = createButton("🏠 होम पर जाएँ") {
+            showPage("Home")
+        }
+
+        val params = matchWidth()
+        params.topMargin = dp(20)
+        contentContainer.addView(homeButton, params)
+    }
+
+    private fun getPageDescription(pageName: String): String {
+        return when (pageName) {
+            "Bus Route" ->
+                "यहाँ बसों के रूट और उनके स्टॉप की जानकारी दिखाई जाएगी।"
+
+            "Timetable" ->
+                "यहाँ बसों के आने और जाने का समय दिखाई देगा।"
+
+            "Bus Stop" ->
+                "यहाँ आसपास के बस स्टॉप की जानकारी दिखाई जाएगी।"
+
+            "Fare" ->
+                "यहाँ बस का किराया और यात्रा की जानकारी मिलेगी।"
+
+            "View Route" ->
+                "यहाँ बस का पूरा रूट और बीच के स्टॉप दिखाई देंगे।"
+
+            "Notifications" ->
+                "यहाँ BlueBus की नई सूचनाएँ दिखाई जाएँगी।"
+
+            "Profile" ->
+                "यहाँ यात्री अपनी प्रोफाइल और अकाउंट की जानकारी देख सकेंगे।"
+
+            else ->
+                "इस सुविधा की जानकारी जल्द उपलब्ध होगी।"
+        }
+    }
+
+    // Home पर स्वीकृत Sponsored Ads
+    private fun loadSponsoredAds() {
+        SponsoredAdRepository.loadApprovedAds(
+            placement = "home",
+            onSuccess = { ads ->
+                runOnUiThread {
+                    if (!isFinishing && ::sponsoredContainer.isInitialized) {
+                        sponsoredContainer.removeAllViews()
+
+                        ads.forEach { ad ->
+                            val card = SponsoredAdUi.createCard(this, ad)
+                            val params = matchWidth()
+                            params.bottomMargin = dp(12)
+                            sponsoredContainer.addView(card, params)
+                        }
+                    }
+                }
+            },
+            onError = { exception ->
+                android.util.Log.e(
+                    "BlueBus",
+                    "Sponsored ads load failed",
+                    exception
+                )
+            }
+        )
+    }
+
+    private fun addHeading(text: String) {
+        val heading = TextView(this).apply {
+            this.text = text
+            textSize = 21f
+            setTextColor(darkBlue)
+            typeface = Typeface.DEFAULT_BOLD
+            setPadding(0, 18, 0, 12)
+        }
+        contentContainer.addView(heading, matchWidth())
+    }
+
+    private fun addTileRow(
+        firstText: String,
+        secondText: String,
+        firstPage: String,
+        secondPage: String
+    ) {
+        val row = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+        }
+
+        row.addView(
+            createTile(firstText) { showPage(firstPage) },
+            LinearLayout.LayoutParams(0, dp(100), 1f).apply {
+                setMargins(4, 5, 6, 5)
+            }
+        )
+
+        row.addView(
+            createTile(secondText) { showPage(secondPage) },
+            LinearLayout.LayoutParams(0, dp(100), 1f).apply {
+                setMargins(6, 5, 4, 5)
+            }
+        )
+
+        contentContainer.addView(row, matchWidth())
+    }
+
+    private fun createTile(
+        text: String,
+        action: () -> Unit
+    ): TextView {
+        return TextView(this).apply {
+            this.text = text
+            textSize = 17f
+            setTextColor(darkBlue)
+            typeface = Typeface.DEFAULT_BOLD
+            gravity = Gravity.CENTER
+            setPadding(8, 12, 8, 12)
+            background = android.graphics.drawable.GradientDrawable().apply {
+                setColor(Color.rgb(217, 240, 255))
+                cornerRadius = 24f
+            }
+            setOnClickListener { action() }
+        }
+    }
+
+    private fun createButton(
+        text: String,
+        action: () -> Unit
+    ): Button {
+        return Button(this).apply {
+            this.text = text
+            textSize = 16f
+            setTextColor(Color.WHITE)
+            setBackgroundColor(blue)
+            setOnClickListener { action() }
+        }
+    }
+
+    private fun createInput(hintText: String): EditText {
+        return EditText(this).apply {
+            hint = hintText
+            textSize = 16f
+            setSingleLine(true)
+            setPadding(16, 12, 16, 12)
+            setBackgroundColor(Color.WHITE)
+        }
     }
 
     private fun matchWidth() = LinearLayout.LayoutParams(
@@ -574,8 +644,7 @@ rootLayout.setPadding(
         ViewGroup.LayoutParams.WRAP_CONTENT
     )
 
-    private fun inputParams() = LinearLayout.LayoutParams(
-        ViewGroup.LayoutParams.MATCH_PARENT,
-        ViewGroup.LayoutParams.WRAP_CONTENT
-    )
+    private fun dp(value: Int): Int {
+        return (value * resources.displayMetrics.density).toInt()
+    }
 }
