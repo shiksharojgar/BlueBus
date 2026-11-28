@@ -341,6 +341,19 @@ page.addView(sponsoredContainer, matchWidth())
         )
 
         window.statusBarColor = darkBlue
+        // मोबाइल के सिस्टम नेविगेशन के लिए जगह सुरक्षित रखें
+rootLayout.setPadding(
+    0,
+    0,
+    0,
+    resources.getDimensionPixelSize(
+        resources.getIdentifier(
+            "navigation_bar_height",
+            "dimen",
+            "android"
+        )
+    )
+)
         window.navigationBarColor = darkBlue
 
         setContentView(rootLayout)
