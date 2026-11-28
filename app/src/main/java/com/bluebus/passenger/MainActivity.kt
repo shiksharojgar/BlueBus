@@ -3,6 +3,8 @@ package com.bluebus.passenger
 
 import android.app.Activity
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
@@ -97,10 +99,79 @@ rootLayout.setPadding(
         window.statusBarColor = darkBlue
         window.navigationBarColor = darkBlue
 
-        setContentView(rootLayout)
+        setContentView(createSplashScreen())
 
+Handler(Looper.getMainLooper()).postDelayed({
+    if (!isFinishing) {
+        setContentView(rootLayout)
         showPage("Home")
     }
+}, 2500)
+
+    }
+
+    
+private fun createSplashScreen(): LinearLayout {
+    val splash = LinearLayout(this).apply {
+        orientation = LinearLayout.VERTICAL
+        gravity = Gravity.CENTER
+        setPadding(24, 30, 24, 30)
+        background = android.graphics.drawable.GradientDrawable(
+            android.graphics.drawable.GradientDrawable.Orientation.TOP_BOTTOM,
+            intArrayOf(
+                Color.rgb(5, 65, 160),
+                Color.rgb(0, 35, 105)
+            )
+        )
+    }
+
+    val logo = ImageView(this).apply {
+        setImageResource(R.drawable.ic_bluebus_full)
+        scaleType = ImageView.ScaleType.FIT_CENTER
+    }
+
+    splash.addView(
+        logo,
+        LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            dp(260)
+        )
+    )
+
+    val brand = TextView(this).apply {
+        text = "BlueBus"
+        textSize = 38f
+        setTextColor(Color.WHITE)
+        typeface = Typeface.DEFAULT_BOLD
+        gravity = Gravity.CENTER
+    }
+
+    splash.addView(brand, matchWidth())
+
+    val tagline = TextView(this).apply {
+        text = "हर बस की जानकारी,\nअब एक जगह!"
+        textSize = 22f
+        setTextColor(Color.WHITE)
+        typeface = Typeface.DEFAULT_BOLD
+        gravity = Gravity.CENTER
+        setPadding(0, 14, 0, 20)
+    }
+
+    splash.addView(tagline, matchWidth())
+
+    val powered = TextView(this).apply {
+        text = "Powered by BlueBus"
+        textSize = 13f
+        setTextColor(Color.WHITE)
+        gravity = Gravity.CENTER
+    }
+
+    val poweredParams = matchWidth()
+    poweredParams.topMargin = dp(70)
+    splash.addView(powered, poweredParams)
+
+    return splash
+}
 
     // सभी पेजों पर एक जैसा Header
     private fun createHeader(): LinearLayout {
@@ -338,88 +409,205 @@ private fun setActiveBottom(key: String) {
 
     // पेज बदलने का मुख्य तरीका
     private fun showPage(pageName: String) {
-        contentContainer.removeAllViews()
-        scrollView.scrollTo(0, 0)
+    contentContainer.removeAllViews()
+    scrollView.scrollTo(0, 0)
 
+    setActiveBottom(
         when (pageName) {
-            "Home" -> createHomePage()
-            "Bus Search" -> createSearchPage()
-            else -> showInfoPage(
-                pageName,
-                getPageDescription(pageName)
-            )
+            "Home" -> "Home"
+            "Bus Search" -> "Bus Search"
+            "Notifications" -> "Notifications"
+            "Profile" -> "Profile"
+            else -> ""
         }
+    )
+
+    when (pageName) {
+        "Home" -> createHomePage()
+        "Bus Search" -> createSearchPage()
+        "View Route" -> createRouteDetailsPage()
+        else -> showInfoPage(
+            pageName,
+            getPageDescription(pageName)
+        )
     }
+}
 
     // Home Page
-    private fun createHomePage() {
+    
+private fun createHomePage() {
 
-        val banner = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            gravity = Gravity.CENTER
-            setPadding(10, 12, 10, 12)
-            setBackgroundColor(darkBlue)
+    // बड़ा Home Banner
+    val banner = LinearLayout(this).apply {
+        orientation = LinearLayout.HORIZONTAL
+        gravity = Gravity.CENTER_VERTICAL
+        setPadding(12, 12, 12, 12)
+        background = android.graphics.drawable.GradientDrawable().apply {
+            setColor(darkBlue)
+            cornerRadius = dp(18).toFloat()
         }
-
-        val bannerImage = ImageView(this).apply {
-            setImageResource(R.drawable.ic_bluebus_full)
-            scaleType = ImageView.ScaleType.FIT_CENTER
-            adjustViewBounds = true
-        }
-
-        banner.addView(
-            bannerImage,
-            LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                dp(180)
-            )
-        )
-
-        val bannerText = TextView(this).apply {
-            text = "सफल अब और भी आसान !"
-            textSize = 24f
-            setTextColor(Color.WHITE)
-            typeface = Typeface.DEFAULT_BOLD
-            gravity = Gravity.CENTER
-            setPadding(4, 12, 4, 8)
-        }
-
-        banner.addView(bannerText, matchWidth())
-        contentContainer.addView(banner, matchWidth())
-
-        addHeading("⭐ प्रायोजित बसें")
-
-        sponsoredContainer = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-        }
-        contentContainer.addView(sponsoredContainer, matchWidth())
-
-        loadSponsoredAds()
-
-        addHeading("अपनी बस खोजें")
-
-        val searchButton = createButton("🔍 बस खोजें") {
-            showPage("Bus Search")
-        }
-        contentContainer.addView(searchButton, matchWidth())
-
-        addHeading("बस सेवाएँ")
-
-        addTileRow(
-            "🚌\nबस रूट", "🕒\nसमय सारणी",
-            "Bus Route", "Timetable"
-        )
-
-        addTileRow(
-            "📍\nबस स्टॉप", "₹\nकिराया",
-            "Bus Stop", "Fare"
-        )
-
-        addTileRow(
-            "🔍\nबस खोजें", "🛣️\nरूट देखें",
-            "Bus Search", "View Route"
-        )
     }
+
+    val bannerImage = ImageView(this).apply {
+        setImageResource(R.drawable.ic_bluebus_full)
+        scaleType = ImageView.ScaleType.FIT_CENTER
+    }
+
+    banner.addView(
+        bannerImage,
+        LinearLayout.LayoutParams(dp(125), dp(115))
+    )
+
+    val bannerText = TextView(this).apply {
+        text = "सफर अब\nऔर भी आसान!"
+        textSize = 22f
+        setTextColor(Color.WHITE)
+        typeface = Typeface.DEFAULT_BOLD
+        gravity = Gravity.CENTER
+    }
+
+    banner.addView(
+        bannerText,
+        LinearLayout.LayoutParams(
+            0,
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            1f
+        )
+    )
+
+    contentContainer.addView(banner, matchWidth())
+
+    // बस खोजने का सेक्शन
+    val searchCard = LinearLayout(this).apply {
+        orientation = LinearLayout.VERTICAL
+        setPadding(14, 14, 14, 14)
+        background = android.graphics.drawable.GradientDrawable().apply {
+            setColor(Color.WHITE)
+            cornerRadius = dp(18).toFloat()
+        }
+    }
+
+    val searchText = TextView(this).apply {
+        text = "📍  कहाँ जाना है?"
+        textSize = 18f
+        setTextColor(Color.DKGRAY)
+        setPadding(8, 12, 8, 12)
+    }
+
+    searchCard.addView(searchText, matchWidth())
+
+    val searchButton = createButton("🔍  बस खोजें") {
+        showPage("Bus Search")
+    }
+
+    searchCard.addView(searchButton, matchWidth())
+
+    val searchParams = matchWidth()
+    searchParams.topMargin = dp(12)
+    contentContainer.addView(searchCard, searchParams)
+
+    // चार मुख्य बटन
+    addHeading("बस सेवाएँ")
+
+    addTileRow(
+        "🚌\nबस रूट",
+        "🕒\nसमय सारणी",
+        "Bus Route",
+        "Timetable"
+    )
+
+    addTileRow(
+        "📍\nबस स्टॉप",
+        "₹\nकिराया",
+        "Bus Stop",
+        "Fare"
+    )
+
+    // लोकप्रिय रूट
+    val popularHeading = LinearLayout(this).apply {
+        orientation = LinearLayout.HORIZONTAL
+        gravity = Gravity.CENTER_VERTICAL
+    }
+
+    val popularTitle = TextView(this).apply {
+        text = "लोकप्रिय रूट"
+        textSize = 20f
+        setTextColor(darkBlue)
+        typeface = Typeface.DEFAULT_BOLD
+    }
+
+    popularHeading.addView(
+        popularTitle,
+        LinearLayout.LayoutParams(
+            0,
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            1f
+        )
+    )
+
+    val allRoutes = TextView(this).apply {
+        text = "सभी देखें →"
+        textSize = 14f
+        setTextColor(blue)
+        typeface = Typeface.DEFAULT_BOLD
+        setOnClickListener { showPage("View Route") }
+    }
+
+    popularHeading.addView(allRoutes)
+    contentContainer.addView(popularHeading, matchWidth())
+
+    addPopularRoute("भोपाल → इंदौर", "रूट विवरण देखें")
+    addPopularRoute("भोपाल → उज्जैन", "रूट विवरण देखें")
+
+    // प्रायोजित बसें
+    addHeading("⭐ प्रायोजित बसें")
+
+    sponsoredContainer = LinearLayout(this).apply {
+        orientation = LinearLayout.VERTICAL
+    }
+
+    contentContainer.addView(sponsoredContainer, matchWidth())
+    loadSponsoredAds()
+}
+
+private fun addPopularRoute(
+    routeName: String,
+    subtitle: String
+) {
+    val card = LinearLayout(this).apply {
+        orientation = LinearLayout.HORIZONTAL
+        gravity = Gravity.CENTER_VERTICAL
+        setPadding(14, 14, 14, 14)
+        background = android.graphics.drawable.GradientDrawable().apply {
+            setColor(Color.WHITE)
+            cornerRadius = dp(14).toFloat()
+        }
+        setOnClickListener {
+            showPage("View Route")
+        }
+    }
+
+    val routeText = TextView(this).apply {
+        text = "🚌  $routeName\n$subtitle"
+        textSize = 15f
+        setTextColor(darkBlue)
+        typeface = Typeface.DEFAULT_BOLD
+    }
+
+    card.addView(
+        routeText,
+        LinearLayout.LayoutParams(
+            0,
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            1f
+        )
+    )
+
+    val params = matchWidth()
+    params.topMargin = dp(9)
+    contentContainer.addView(card, params)
+}
+
 
     // Bus Search Page
     private fun createSearchPage() {
@@ -557,6 +745,92 @@ private fun setActiveBottom(key: String) {
         params.topMargin = dp(20)
         contentContainer.addView(homeButton, params)
     }
+
+private fun createRouteDetailsPage() {
+
+    addHeading("←  रूट विवरण")
+
+    val routeCard = LinearLayout(this).apply {
+        orientation = LinearLayout.VERTICAL
+        setPadding(14, 16, 14, 16)
+        background = android.graphics.drawable.GradientDrawable().apply {
+            setColor(Color.WHITE)
+            cornerRadius = dp(18).toFloat()
+        }
+    }
+
+    val routeTitle = TextView(this).apply {
+        text = "भोपाल  →  इंदौर"
+        textSize = 25f
+        setTextColor(darkBlue)
+        typeface = Typeface.DEFAULT_BOLD
+    }
+
+    routeCard.addView(routeTitle, matchWidth())
+
+    val routeSummary = TextView(this).apply {
+        text = "🚌  कुल समय: जानकारी उपलब्ध होने पर\n📍  दूरी: जानकारी उपलब्ध होने पर"
+        textSize = 15f
+        setTextColor(Color.DKGRAY)
+        setPadding(0, 10, 0, 12)
+    }
+
+    routeCard.addView(routeSummary, matchWidth())
+
+    val busImage = ImageView(this).apply {
+        setImageResource(R.drawable.ic_bluebus_full)
+        scaleType = ImageView.ScaleType.FIT_CENTER
+        adjustViewBounds = true
+    }
+
+    routeCard.addView(
+        busImage,
+        LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            dp(150)
+        )
+    )
+
+    contentContainer.addView(routeCard, matchWidth())
+
+    addHeading("उपलब्ध बसें")
+
+    val busList = LinearLayout(this).apply {
+        orientation = LinearLayout.VERTICAL
+        setPadding(12, 12, 12, 12)
+        setBackgroundColor(Color.WHITE)
+    }
+
+    val demoNote = TextView(this).apply {
+        text = "बसों का समय, किराया और उपलब्धता सत्यापित जानकारी मिलने पर यहाँ दिखेगी।"
+        textSize = 15f
+        setTextColor(Color.DKGRAY)
+        setPadding(8, 12, 8, 12)
+    }
+
+    busList.addView(demoNote, matchWidth())
+    contentContainer.addView(busList, matchWidth())
+
+    addHeading("मुख्य जानकारी")
+
+    val details = listOf(
+        "✓  बस प्रकार: जानकारी उपलब्ध होने पर",
+        "✓  सुविधाएँ: जानकारी उपलब्ध होने पर",
+        "✓  स्रोत: सत्यापित बस ऑपरेटर",
+        "✓  रूट स्टॉप: जानकारी उपलब्ध होने पर"
+    )
+
+    details.forEach { detail ->
+        val line = TextView(this).apply {
+            text = detail
+            textSize = 15f
+            setTextColor(Color.DKGRAY)
+            setPadding(10, 9, 10, 9)
+        }
+
+        contentContainer.addView(line, matchWidth())
+    }
+}
 
     private fun getPageDescription(pageName: String): String {
         return when (pageName) {
