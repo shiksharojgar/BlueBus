@@ -589,7 +589,7 @@ private fun createRoutePage() {
             textSize = 16f
             setTextColor(Color.BLACK)
             setHintTextColor(Color.GRAY)
-            singleLine = true
+            setSingleLine(true)
             setPadding(15, 12, 15, 12)
             background = roundedBackground(Color.WHITE, 12)
         }
