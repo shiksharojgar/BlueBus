@@ -506,47 +506,50 @@ class MainActivity : Activity() {
         contentContainer.addView(result, matchWidth())
     }
 
-    // तीसरी स्क्रीन: रूट की जानकारी
-    private fun createRoutePage() {
-        addHeading("🛣️ बस रूट की जानकारी")
+    
+    // तीसरी स्क्रीन: Route Page
+private fun createRoutePage() {
+    addHeading("🛣️ बस रूट की जानकारी")
 
-        val photo = ImageView(this).apply {
-            setImageResource(R.drawable.bluebus_bus_photo)
-            scaleType = ImageView.ScaleType.CENTER_CROP
-            background = roundedBackground(Color.WHITE, 16)
-        }
-
-        contentContainer.addView(
-            photo,
-            LinearLayout.LayoutParams(-1, 185)
-        )
-
-        addHeading("भोपाल → इंदौर")
-
-        addRouteDetail("🚌 बस का नाम", "BlueBus Express")
-        addRouteDetail("📍 शुरुआती स्थान", "भोपाल")
-        addRouteDetail("🏁 गंतव्य स्थान", "इंदौर")
-        addRouteDetail("🕒 प्रस्थान समय", "सुबह 08:00 बजे")
-        addRouteDetail("🕒 आगमन समय", "दोपहर 02:00 बजे")
-        addRouteDetail("💰 अनुमानित किराया", "₹350")
-
-        val note = TextView(this).apply {
-            text = "नोट: यह अभी नमूना जानकारी है। वास्तविक बस और समय की पुष्टि ऑपरेटर से करें।"
-            textSize = 13f
-            setTextColor(Color.DKGRAY)
-            setPadding(12, 15, 12, 15)
-            background = roundedBackground(Color.WHITE, 12)
-        }
-
-        contentContainer.addView(note, matchWidth())
-
-        val backButton = createButton("← वापस जाएँ", blue)
-        backButton.setOnClickListener {
-            showPage("Home")
-        }
-
-        contentContainer.addView(backButton, matchWidth())
+    // तीसरी फोटो: BlueBus Route Banner
+    val routeBanner = ImageView(this).apply {
+        setImageResource(R.drawable.bluebus_route_banner)
+        scaleType = ImageView.ScaleType.FIT_CENTER
+        adjustViewBounds = true
     }
+
+    contentContainer.addView(
+        routeBanner,
+        LinearLayout.LayoutParams(-1, -2)
+    )
+
+    addHeading("भोपाल → इंदौर")
+
+    addRouteDetail("🚌 बस का नाम", "BlueBus Express")
+    addRouteDetail("📍 शुरुआती स्थान", "भोपाल")
+    addRouteDetail("🏁 गंतव्य स्थान", "इंदौर")
+    addRouteDetail("🕒 प्रस्थान समय", "सुबह 08:00 बजे")
+    addRouteDetail("🕒 आगमन समय", "दोपहर 02:00 बजे")
+    addRouteDetail("💰 अनुमानित किराया", "₹350")
+
+    val note = TextView(this).apply {
+        text = "नोट: यह अभी नमूना जानकारी है। वास्तविक बस और समय की पुष्टि ऑपरेटर से करें।"
+        textSize = 13f
+        setTextColor(Color.DKGRAY)
+        setPadding(12, 15, 12, 15)
+        background = roundedBackground(Color.WHITE, 12)
+    }
+
+    contentContainer.addView(note, matchWidth())
+
+    val backButton = createButton("← वापस जाएँ", blue)
+
+    backButton.setOnClickListener {
+        showPage("Home")
+    }
+
+    contentContainer.addView(backButton, matchWidth())
+}
 
     private fun addRouteDetail(label: String, value: String) {
         val card = TextView(this).apply {
