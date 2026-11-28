@@ -39,9 +39,10 @@ class MainActivity : Activity() {
         window.navigationBarColor = darkBlue
 
         val root = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setBackgroundColor(Color.WHITE)
-        }
+    orientation = LinearLayout.VERTICAL
+    setBackgroundColor(Color.WHITE)
+    fitsSystemWindows = true
+}
 
         root.addView(createHeader(), matchWidth())
 
