@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.ImageView
 import android.widget.ScrollView
 import android.widget.TextView
 
@@ -46,6 +47,46 @@ class MainActivity : Activity() {
             setPadding(0, 8, 0, 28)
         }
         page.addView(tagline, matchWidth())
+
+        
+        // BlueBus Home Banner Photo
+
+        val bannerCard = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            gravity = Gravity.CENTER
+            setPadding(12, 14, 12, 14)
+            setBackgroundColor(darkBlue)
+        }
+
+        val bannerImage = ImageView(this).apply {
+            setImageResource(R.drawable.ic_bluebus_full)
+            scaleType = ImageView.ScaleType.FIT_CENTER
+            adjustViewBounds = true
+        }
+
+        bannerCard.addView(
+            bannerImage,
+            LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                (190 * resources.displayMetrics.density).toInt()
+            )
+        )
+
+        val bannerText = TextView(this).apply {
+            text = "सफल अब और भी आसान !"
+            textSize = 25f
+            setTextColor(Color.WHITE)
+            typeface = Typeface.DEFAULT_BOLD
+            gravity = Gravity.CENTER
+            setPadding(4, 14, 4, 8)
+        }
+
+        bannerCard.addView(bannerText, matchWidth())
+
+        val bannerParams = matchWidth()
+        bannerParams.bottomMargin = 18
+        page.addView(bannerCard, bannerParams)
+
         val sponsoredHeading = TextView(this).apply {
     text = "⭐ प्रायोजित बसें"
     textSize = 20f
