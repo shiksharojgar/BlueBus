@@ -18,6 +18,7 @@ class MainActivity : Activity() {
     private val blue = Color.rgb(18, 100, 197)
     private val darkBlue = Color.rgb(7, 59, 120)
     private lateinit var resultsContainer: LinearLayout
+    private lateinit var sponsoredContainer: LinearLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,6 +46,19 @@ class MainActivity : Activity() {
             setPadding(0, 8, 0, 28)
         }
         page.addView(tagline, matchWidth())
+        val sponsoredHeading = TextView(this).apply {
+    text = "⭐ प्रायोजित बसें"
+    textSize = 20f
+    setTextColor(darkBlue)
+    typeface = Typeface.DEFAULT_BOLD
+    setPadding(0, 12, 0, 12)
+}
+page.addView(sponsoredHeading, matchWidth())
+
+sponsoredContainer = LinearLayout(this).apply {
+    orientation = LinearLayout.VERTICAL
+}
+page.addView(sponsoredContainer, matchWidth())
 
         val heading = TextView(this).apply {
             text = "अपनी बस खोजें"
@@ -139,6 +153,30 @@ class MainActivity : Activity() {
         }
 
         setContentView(scrollView)
+        SponsoredAdRepository.loadApprovedAds(
+    placement = "home",
+    onSuccess = { ads ->
+        runOnUiThread {
+            sponsoredContainer.removeAllViews()
+
+            ads.forEach { ad ->
+                val card = SponsoredAdUi.createCard(this, ad)
+
+                val params = matchWidth()
+                params.bottomMargin = 14
+
+                sponsoredContainer.addView(card, params)
+            }
+        }
+    },
+    onError = { exception ->
+        android.util.Log.e(
+            "BlueBus",
+            "Sponsored ads load failed",
+            exception
+        )
+    }
+)
     }
 
     private fun showSearchResults(from: String, to: String) {
