@@ -131,7 +131,7 @@ class MainActivity : Activity() {
         val scrollView = ScrollView(this).apply {
             addView(
                 page,
-                ScrollView.LayoutParams(
+                ViewGroup.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT
                 )
