@@ -3,8 +3,8 @@
 
 <application
     android:allowBackup="false"
-    android:icon="@drawable/ic_bluebus"
-    android:roundIcon="@drawable/ic_bluebus"
+    android:icon="@drawable/ic_bluebus_full"
+android:roundIcon="@drawable/ic_bluebus_full"
     android:label="BlueBus"
     android:supportsRtl="true"
         android:theme="@android:style/Theme.Material.Light.NoActionBar">
