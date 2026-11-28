@@ -30,7 +30,6 @@ class MainActivity : Activity() {
             setBackgroundColor(Color.rgb(245, 249, 255))
         }
 
-        val brand = TextView(this).apply {
         
         // BlueBus Header with Left Menu
 
