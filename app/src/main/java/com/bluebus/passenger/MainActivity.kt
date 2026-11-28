@@ -299,11 +299,15 @@ class MainActivity : Activity() {
         }
 
         val photo = ImageView(this).apply {
-            setImageResource(R.drawable.bluebus_bus_photo)
-            scaleType = ImageView.ScaleType.CENTER_CROP
-        }
+    setImageResource(R.drawable.bluebus_bus_photo)
+    scaleType = ImageView.ScaleType.FIT_CENTER
+    adjustViewBounds = true
+}
 
-        banner.addView(photo, LinearLayout.LayoutParams(-1, 145))
+banner.addView(
+    photo,
+    LinearLayout.LayoutParams(-1, ViewGroup.LayoutParams.WRAP_CONTENT)
+)
 
         val slogan = TextView(this).apply {
             text = "सफर अब और भी आसान!"
